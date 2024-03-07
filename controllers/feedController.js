@@ -76,12 +76,32 @@ exports.updatePost = (req, res, next) => {
     });
 }
 
-exports.deletePost = (req, res, next) => {
+exports.deletePost = async (req, res, next) => {
     const postID = req.params.postID;
     //Buscar no DB
     console.log(postID);
-    res.status(200).json({
+
+    try{
+        const deletedPost = await Post.findByIdAndDelete(postID)
+
+        if(!deletedPost){
+            return res.status(404).json({
+                msg: "Post não encontrado."
+            });
+        }
+
+        res.status(200).json({
+            msg: "Post excluído com sucesso!",
+            post: deletedPost
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            msg: "Erro ao excluir o post."
+        });
+    }
+   /*  res.status(200).json({
         msg: "Post excluído com sucesso!",
         post: postID
-    });
+    }); */
 }
