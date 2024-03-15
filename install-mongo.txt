@@ -1,6 +1,0 @@
-Passos para instalar Mongoose
-
-1. Instalar (npm i mongoose)
-2. importar o mongoose
-3. Conectar com o mongoose
-4.

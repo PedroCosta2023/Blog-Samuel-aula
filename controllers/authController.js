@@ -2,7 +2,7 @@ const { validationResult } = require("express-validator");
 const User = require("../models/user")
 const bcrypt = require("bcrypt");
 
-exports.signUpUser = (req, res, next) => {
+exports.signUpUser = async (req, res, next) => {
     const errors = validationResult(req);
     //Mudar esta validação para um captar no app
     //use, em todas as requisições!
@@ -14,11 +14,31 @@ exports.signUpUser = (req, res, next) => {
         error.data = errors.array();
         throw error;
     }
-    const email = req.body.email;
-    const name = req.body.name;
-    const password = req.body.password;
+
+    const {name, email, password, confirmpassword} = req.body;
     //A senha está sendo salva em formato texto!!!
     //um problema!! Salvar ela criptografada!
+
+    if(!email){
+        return res.status(422).json({ msg: "O email é campo obrigatorio!"})
+    }
+    if(!name){
+        return res.status(422).json({ msg: "O nome é campo obrigatorio!"})
+    }
+    if(!password){
+        return res.status(422).json({ msg: "A senha é obrigatoria!"})
+    }
+
+    if(password !== confirmpassword){
+        return res.status(422).json({ msg: "As senhas não conferem!"})
+    }
+
+    const userExists = await User.findOne({ email : email })
+
+    if(userExists){
+        return res.status(422).json({ msg: "Email já está em uso!"})
+    }
+
     bcrypt.hash(password, 12).then(passHashed => {
         //Add este post ao DB
         const user = new User({
