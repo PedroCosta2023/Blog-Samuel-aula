@@ -15,11 +15,6 @@ const userSchema =new Schema (
             type: String,
             required: true
         },
-        confirmpassword: {
-            type: String,
-            required: true
-        },
-        
     },
     {
         timestamps: true,

@@ -4,7 +4,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const multer = require("multer");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+
 
 
 const app = express();
@@ -36,8 +36,8 @@ app.use((req, res, next) => {
 });
 
 //Rotas do app - Esse middleware vai captar todas as rotas criadas no feedRoutes
-app.use('/feed', feedRoutes)
-app.use('/auth', authRoutes)
+app.use('/feed', feedRoutes);
+app.use('/auth', authRoutes);
 
 //Está interceptando os erros 
 app.use((error, req, res, next) => {

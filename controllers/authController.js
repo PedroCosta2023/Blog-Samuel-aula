@@ -1,6 +1,7 @@
 const { validationResult } = require("express-validator");
 const User = require("../models/user")
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 exports.signUpUser = async (req, res, next) => {
     const errors = validationResult(req);
@@ -15,28 +16,18 @@ exports.signUpUser = async (req, res, next) => {
         throw error;
     }
 
-    const {name, email, password, confirmpassword} = req.body;
+    const { name, email, password, confirmpassword } = req.body;
     //A senha está sendo salva em formato texto!!!
     //um problema!! Salvar ela criptografada!
 
-    if(!email){
-        return res.status(422).json({ msg: "O email é campo obrigatorio!"})
-    }
-    if(!name){
-        return res.status(422).json({ msg: "O nome é campo obrigatorio!"})
-    }
-    if(!password){
-        return res.status(422).json({ msg: "A senha é obrigatoria!"})
+    if (password !== confirmpassword) {
+        return res.status(422).json({ msg: "As senhas não conferem!" })
     }
 
-    if(password !== confirmpassword){
-        return res.status(422).json({ msg: "As senhas não conferem!"})
-    }
+    const userExists = await User.findOne({ email: email })
 
-    const userExists = await User.findOne({ email : email })
-
-    if(userExists){
-        return res.status(422).json({ msg: "Email já está em uso!"})
+    if (userExists) {
+        return res.status(422).json({ msg: "Email já está em uso!" })
     }
 
     bcrypt.hash(password, 12).then(passHashed => {
@@ -64,17 +55,35 @@ exports.signUpUser = async (req, res, next) => {
 
 
 }
-exports.signInUser =async (req, res, next) => {
+exports.signInUser = async (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
     let loadedUser;
     //Buscar user na base de dados com o email enviado
     await User.findOne({ email: email })
-        .then(user => { //user é o que ele retorna
+
+
+    try{
+        const secret = process.env.SECRET;
+            const token = jwt.sign(
+                {
+                    id: user.id,
+                },
+                secret,
+            )
+
+            res.status(200).json({ message: "Usuário logado com sucesso!", token })
+    } catch(error)  {
+        console.log(error)
+        return res.status(500).json({
+            msg: "Aconteceu um erro inesperado"
+        })
+    }
+
+ /*        .then(user => { //user é o que ele retorna
             //validar que email não existe na base
-            console.log(user)
             if (!user) {
-              return  Promise.reject("Falha de validação");
+                return Promise.reject("Falha de validação");
                 //error.statusCode = 422;
                 //throw error;
             }
@@ -84,9 +93,18 @@ exports.signInUser =async (req, res, next) => {
             if (!passIsEqual) {
                 return res.json({ message: "Senha inválida..." })
             }
-            return res.status(200).json({ message: "Usuário logado com sucesso!" })
+
+            const secret = process.env.SECRET;
+            const token = jwt.sign(
+                {
+                    id: user.id,
+                },
+                secret,
+            )
+
+            return res.status(200).json({ message: "Usuário logado com sucesso!", token })
         })
         .catch(error => {
             console.log(error)
-        })
+        }) */
 }
