@@ -60,27 +60,9 @@ exports.signInUser = async (req, res, next) => {
     const password = req.body.password;
     let loadedUser;
     //Buscar user na base de dados com o email enviado
-    await User.findOne({ email: email })
+    const user = await User.findOne({ email: email })
 
-
-    try{
-        const secret = process.env.SECRET;
-            const token = jwt.sign(
-                {
-                    id: user.id,
-                },
-                secret,
-            )
-
-            res.status(200).json({ message: "Usuário logado com sucesso!", token })
-    } catch(error)  {
-        console.log(error)
-        return res.status(500).json({
-            msg: "Aconteceu um erro inesperado"
-        })
-    }
-
- /*        .then(user => { //user é o que ele retorna
+        .then(user => { //user é o que ele retorna
             //validar que email não existe na base
             if (!user) {
                 return Promise.reject("Falha de validação");
@@ -97,7 +79,7 @@ exports.signInUser = async (req, res, next) => {
             const secret = process.env.SECRET;
             const token = jwt.sign(
                 {
-                    id: user.id,
+                    id: User.id,
                 },
                 secret,
             )
@@ -106,5 +88,5 @@ exports.signInUser = async (req, res, next) => {
         })
         .catch(error => {
             console.log(error)
-        }) */
+        })
 }

@@ -67,14 +67,10 @@ exports.createPost = (req, res, next) => {
 //Rotas para atualizar e deletar um post
 
 exports.updatePost = (req, res, next) => {
-    const postId = req.params.postID;
-    //Buscar no DB
-    console.log(postId);
-    res.status(200).json({
-        msg: "Post atualizado com sucesso!",
-        post: postId
-    });
-}
+    const {postId} = req.params;
+    const {newName} = req.body;
+
+};
 
 exports.deletePost = async (req, res, next) => {
     const postID = req.params.postID;
