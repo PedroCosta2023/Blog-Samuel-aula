@@ -10,6 +10,7 @@ const app = express();
 const port = 8080;
 const feedRoutes = require("./routes/feedRoutes");
 const authRoutes = require("./routes/authRoutes");
+const userRoutes = require("./routes/userRoutes");
 const { db } = require("./models/user");
 //Arquivo separado de upload de imagens
 const uploadFiles = require("./services/uploadFiles");
@@ -43,6 +44,7 @@ app.use((req, res, next) => {
 //Rotas do app - Esse middleware vai captar todas as rotas criadas no feedRoutes
 app.use("/feed", feedRoutes);
 app.use("/auth", authRoutes);
+app.use("/user", userRoutes);
 
 //Está interceptando os erros
 app.use((error, req, res, next) => {

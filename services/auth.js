@@ -9,6 +9,9 @@ module.exports = {
         erro: true,
         messagem: "token",
       });
+
+      const [bearer, token] = authHeader.split(" ");
+      console.log(token);
     }
   },
 };
